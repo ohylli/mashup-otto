@@ -29,7 +29,7 @@ function initDbConnection( dbUrl, callback ) {
     });
 }
 
-function getBooks( callback ) {
+function getFromHelmet( callback ) {
     // helper function for converting the year string into a number
     // required because some years begin with a letter
     var yearToNumber = function(yearStr) {
@@ -78,5 +78,19 @@ function getBooks( callback ) {
         console.log("Error: ", e);
     });
 }
+
+function getBooks( callback ) {
+    bookCollection.findOne( function ( err, item ) {
+        if ( err || !item) {
+            console.log( "books not in database.");
+            getFromHelmet( callback );
+            return;
+        }
+        
+        console.log( "query result found from db." );
+        callback( item.result );
+    });
+}
+
 exports.getBooks = getBooks;
 exports.initDbConnection = initDbConnection;
