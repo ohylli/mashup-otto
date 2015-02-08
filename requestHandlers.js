@@ -13,11 +13,9 @@ function query(response) {
     console.log("make query");
     helmet.getBooks(function(books) {
         response.writeHead(200, {
-            "content-type": "text/plain"
+            "content-type": "application/json"
         });
-        books.forEach( function ( book ) {
-            response.write( book.id +", " +book.title +", " +book.year +"\n" );
-        });
+        response.write( JSON.stringify( books ));
         response.end();
     });
 }
