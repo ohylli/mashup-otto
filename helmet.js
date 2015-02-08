@@ -1,4 +1,24 @@
 var http = require( "http" );
+var mongodb = require( "mongodb" );
+
+var mongo = null;
+
+function initDbConnection( dbUrl, callback ) {
+    console.log( "Connecting to mongodb at " +dbUrl );
+    var mongoClient = mongodb.MongoClient;
+    mongoClient.connect( dbUrl, function( err, db ) {
+        if ( !err ) {
+            console.log( "connection to database formed." );
+            mongo = db;
+            callback();
+        }
+        
+        else {
+            console.log ( "failed to connect to database. Server will not be started.");
+            console.log( err );
+        }
+    });
+}
 
 function getBooks( callback ) {
     // helper function for converting the year string into a number
@@ -43,3 +63,4 @@ function getBooks( callback ) {
     });
 }
 exports.getBooks = getBooks;
+exports.initDbConnection = initDbConnection;
