@@ -15,6 +15,8 @@ function query(response) {
         response.writeHead(200, {
             "content-type": "application/json"
         });
+        
+        console.log( books );
         response.write( JSON.stringify( books ));
         response.end();
     });
