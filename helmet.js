@@ -63,7 +63,14 @@ function getBooks( callback ) {
 
                 // console.log(title, ", ", year);
             }
-            
+
+            bookCollection.insert( { result: books }, {w:1}, function ( err, result ) {
+                if ( err ) {
+                    console.log( "failed to insert query result to database." );
+                    return;
+                }
+                console.log( "Query result inserted to database.");
+            });
             callback( books );
         });
 
