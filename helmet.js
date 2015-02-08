@@ -1,7 +1,7 @@
 var http = require( "http" );
 var mongodb = require( "mongodb" );
 
-var mongo = null;
+var bookCollection = null;
 
 function initDbConnection( dbUrl, callback ) {
     console.log( "Connecting to mongodb at " +dbUrl );
@@ -9,8 +9,17 @@ function initDbConnection( dbUrl, callback ) {
     mongoClient.connect( dbUrl, function( err, db ) {
         if ( !err ) {
             console.log( "connection to database formed." );
-            mongo = db;
-            callback();
+            db.collection( "bookQueries", function ( err, collection ) {
+                if ( err ) {
+                    console.log( "could not get the bookQueries collection." );
+                    console.log( err );
+                    return;
+                } 
+                
+                bookCollection = collection;                
+                callback();
+            });
+            
         }
         
         else {
