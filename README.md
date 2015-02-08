@@ -25,6 +25,7 @@ The application is in early development and some features are only for general n
 - HTTP request to /api/query/books returns a book list from helmet library search
 - This search result is cached into mongodb and used in following responses
 - other requests result in HTTP 404
+- the app writes quite a lot of stuff to the console about what it is doing
 
 The application consists of following modules:
 
