@@ -1,10 +1,15 @@
 var helmet = require("./helmet");
 var fs = require("fs");
+var nodepath = require( "path" );
 
 function serveFile( path, response ) {
-    filePath = process.cwd() +"/site" +path;
+    var mediaTypes = {};
+    mediaTypes[".html"] = "text/html";
+    
+    var filePath = process.cwd() +"/site" +path;
+    var ext = nodepath.extname( filePath );
     console.log( "serving static file: " +filePath );
-    response.writeHead( 200, { "content-type": "text/html" });
+    response.writeHead( 200, { "content-type": mediaTypes[ext] });
     fs.createReadStream( filePath ).pipe( response );
 }
 
