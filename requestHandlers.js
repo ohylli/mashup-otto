@@ -1,12 +1,16 @@
 var helmet = require("./helmet");
+var fs = require("fs");
+
+function serveFile( path, response ) {
+    filePath = process.cwd() +"/site" +path;
+    console.log( "serving static file: " +filePath );
+    response.writeHead( 200, { "content-type": "text/html" });
+    fs.createReadStream( filePath ).pipe( response );
+}
 
 function start(response) {
     console.log("show start page");
-    response.writeHead(200, {
-        "content-type": "text/plain"
-    });
-    response.write("start page\n");
-    response.end();
+    serveFile( "/index.html", response );
 }
 
 function query(response) {
