@@ -2,15 +2,23 @@ var helmet = require("./helmet");
 var fs = require("fs");
 var nodepath = require( "path" );
 
-function serveFile( path, response ) {
+function serveFile( path, response, status ) {
+    if ( status === undefined )
+    {
+        status = 200;
+    }
+    
     var mediaTypes = {};
     mediaTypes[".html"] = "text/html";
     
     var filePath = process.cwd() +"/site" +path;
     var ext = nodepath.extname( filePath );
     console.log( "serving static file: " +filePath );
-    response.writeHead( 200, { "content-type": mediaTypes[ext] });
-    fs.createReadStream( filePath ).pipe( response );
+    response.writeHead( status, { "content-type": mediaTypes[ext] });
+    var file = fs.createReadStream( filePath ).on( "error", function() {
+        serveFile( "/404.html", response, 404 );
+    });
+    file.pipe( response );
 }
 
 function start(response) {
@@ -31,5 +39,6 @@ function query(response) {
     });
 }
 
+exports.serveFile = serveFile;
 exports.start = start;
 exports.query = query;
