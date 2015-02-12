@@ -1,0 +1,27 @@
+{
+  "name": "mashup-otto",
+  "version": "1.0.0",
+  "description": "A mashup application that combines Hong Kong weather and air quality index data.",
+  "main": "index.js",
+  "dependencies": {
+    "mongodb": "^1.4.30"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ohylli/mashup-otto"
+  },
+  "keywords": [
+    "mashup"
+  ],
+  "author": "Otto Hylli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ohylli/mashup-otto/issues"
+  },
+  "homepage": "https://github.com/ohylli/mashup-otto"
+}
