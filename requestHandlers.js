@@ -10,6 +10,8 @@ function serveFile( path, response, status ) {
     
     var mediaTypes = {};
     mediaTypes[".html"] = "text/html";
+    mediaTypes['.css'] = "text/css";
+    mediaTypes['.js'] = "text/javascript";
     
     var filePath = process.cwd() +"/site" +path;
     var ext = nodepath.extname( filePath );
