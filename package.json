@@ -4,7 +4,11 @@
   "description": "A mashup application that combines Hong Kong weather and air quality index data.",
   "main": "index.js",
   "dependencies": {
-    "mongodb": "^1.4.30"
+    "cheerio": "^0.18.0",
+    "lodash": "^3.2.0",
+    "mongodb": "^1.4.30",
+    "request": "^2.53.0",
+    "xml2js": "^0.4.5"
   },
   "devDependencies": {},
   "scripts": {
