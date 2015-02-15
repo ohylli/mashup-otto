@@ -1,6 +1,9 @@
 var helmet = require("./helmet");
+var data = require('./data');
+
 var fs = require("fs");
 var nodepath = require( "path" );
+var _ = require('lodash');
 
 function serveFile( path, response, status ) {
     if ( status === undefined )
@@ -41,6 +44,23 @@ function query(response) {
     });
 }
 
+function hkData( response ) {
+    data.getData( function ( err, stations ) {
+        response.writeHead( 200, { "content-type": 'text/html' } );
+        if ( err ) {
+            console.log( err );
+            response.end();
+            return;
+        }
+        
+        _.each( stations, function ( item ) {
+            response.write( item.name +" " +item.temperature +" " +item.aqhi +"\n");
+        });
+        response.end();
+    });
+}
+
 exports.serveFile = serveFile;
 exports.start = start;
 exports.query = query;
+exports.hkData = hkData;

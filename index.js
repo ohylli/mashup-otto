@@ -7,6 +7,7 @@ var dbUrl = "mongodb://localhost:27017/mashup";
 var handle = [];
 handle["/"] = requestHandlers.start;
 handle["/api/query/books"] = requestHandlers.query;
+handle["/api/query/hkdata"] = requestHandlers.hkData;
 
 helmet.initDbConnection( dbUrl, function() {
     server.start( router.route, handle );    
