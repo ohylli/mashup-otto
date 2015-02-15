@@ -44,4 +44,47 @@ function getWeather( callback ) {
     });
 }
 
-exports.getWeather = getWeather;
+function getAqhi( stations, callback ) {
+    request( aqhiUrl, function( err, response, body ) {
+        if ( err ) {
+            console.log( "Could not fetch aqhi data.");
+            callback( err );
+            return;
+        }
+        
+       xml2js.parseString( body, function( err, data ) {
+           if ( err ) {
+               console.log( "erro in parsing the aqhi data." );
+               callback( err );
+               return;
+           }
+           
+           var items = data['AQHI24HrReport']['item'];
+           for ( var i = 0; i < items.length; i++ ) {
+               var name = items[i]['StationName'][0];
+               if ( i == items.length -1 ||  name != items[i +1]['StationName'][0]  ) {
+                   // this is the last i.e. the newest measurement from a station
+                   if ( stations[name] ) {
+                       stations[name].aqhi = Number( items[i]['aqhi'][0] );
+                   }
+               }
+           }
+           
+           callback( null, stations );
+       });
+    });
+}
+
+function getData( callback ) {
+    getWeather( function ( err, stations ) {
+        if ( err ) {
+            console.log( "Error in aquiring data.");
+            callback( err );
+            return;
+        }
+        
+        getAqhi( stations, callback );
+    });
+}
+
+exports.getData = getData;
