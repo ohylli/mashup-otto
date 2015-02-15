@@ -83,7 +83,15 @@ function getData( callback ) {
             return;
         }
         
-        getAqhi( stations, callback );
+        getAqhi( stations, function ( err, stations ) {
+            if ( err ) {
+                callback( err );
+                return;
+            }
+            
+            stations = _.filter( stations, 'aqhi' );
+            callback( null, stations );
+        });
     });
 }
 
