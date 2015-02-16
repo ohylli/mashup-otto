@@ -2,13 +2,38 @@ var xml2js = require( "xml2js" );
 var request = require( "request");
 var _ = require("lodash");
 var cheerio = require('cheerio');
+var mongodb = require( "mongodb" );
 
 var aqhiUrl = 'http://www.aqhi.gov.hk/epd/ddata/html/out/24aqhi_Eng.xml';
 var weatherUrl = 'http://rss.weather.gov.hk/rss/CurrentWeather.xml';
 
-// aqhi['AQHI24HrReport']['item'][0]['StationName'][0]
-// ['AQHI24HrReport']['item'][0]['aqhi'][0]
-//  ['rss']['channel'][0]['item'][0]['description'][0]
+var dataCollection = null;
+
+function initDbConnection( dbUrl, callback ) {
+    console.log( "Connecting to mongodb at " +dbUrl );
+    var mongoClient = mongodb.MongoClient;
+    mongoClient.connect( dbUrl, function( err, db ) {
+        if ( !err ) {
+            console.log( "connection to database formed." );
+            db.collection( "hkdata", function ( err, collection ) {
+                if ( err ) {
+                    console.log( "could not get the hkdata  collection." );
+                    console.log( err );
+                    return;
+                } 
+                
+                dataCollection = collection;                
+                callback();
+            });
+            
+        }
+        
+        else {
+            console.log ( "failed to connect to database. Server will not be started.");
+            console.log( err );
+        }
+    });
+}
 
 function getWeather( callback ) {
     request( weatherUrl, function ( err, response, body ) {
@@ -75,7 +100,7 @@ function getAqhi( stations, callback ) {
     });
 }
 
-function getData( callback ) {
+function getDataFromWeb( callback ) {
     getWeather( function ( err, stations ) {
         if ( err ) {
             console.log( "Error in aquiring data.");
@@ -90,9 +115,32 @@ function getData( callback ) {
             }
             
             stations = _.filter( stations, 'aqhi' );
+            dataCollection.insert( { result: stations  }, {w:1}, function ( err, result ) {
+                if ( err ) {
+                    console.log( "failed to insert query result to database." );
+                    return;
+                }
+                console.log( "Query result inserted to database.");
+            });
+            
             callback( null, stations );
         });
     });
 }
 
+function getData( callback ) {
+    dataCollection.findOne( function ( err, item ) {
+        if ( err || !item) {
+            console.log( "not in database.");
+            getDataFromWeb( callback );
+            return;
+        }
+        
+        console.log( "data found from db." );
+        callback( null, item.result );
+    });
+    
+}
+
 exports.getData = getData;
+exports.initDbConnection = initDbConnection;
