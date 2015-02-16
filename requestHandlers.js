@@ -53,9 +53,11 @@ function hkData( response ) {
             return;
         }
         
+        response.write( "<table><thead><th>Station</th><th>Temperature</th><th>aqhi</th></thead><tbody>");
         _.each( stations, function ( item ) {
-            response.write( item.name +" " +item.temperature +" " +item.aqhi +"\n");
+            response.write( "<tr><td>" +item.name +"</td><td>" +item.temperature +"</td><td>" +item.aqhi +"</td></tr>");
         });
+        response.write( "</tbody></table>" );
         response.end();
     });
 }
