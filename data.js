@@ -8,6 +8,7 @@ var aqhiUrl = 'http://www.aqhi.gov.hk/epd/ddata/html/out/24aqhi_Eng.xml';
 var weatherUrl = 'http://rss.weather.gov.hk/rss/CurrentWeather.xml';
 
 var dataCollection = null;
+var cacheClearDelay = 1000 *60 *10;
 
 function initDbConnection( dbUrl, callback ) {
     console.log( "Connecting to mongodb at " +dbUrl );
@@ -23,6 +24,8 @@ function initDbConnection( dbUrl, callback ) {
                 } 
                 
                 dataCollection = collection;                
+                // if there are cached query results remove them
+                clearDb();
                 callback();
             });
             
@@ -33,6 +36,11 @@ function initDbConnection( dbUrl, callback ) {
             console.log( err );
         }
     });
+}
+
+function clearDb() {
+    console.log( "Clearing the cached query result." );
+    dataCollection.remove( function () {});
 }
 
 function getWeather( callback ) {
@@ -121,6 +129,7 @@ function getDataFromWeb( callback ) {
                     return;
                 }
                 console.log( "Query result inserted to database.");
+                setTimeout( clearDb, cacheClearDelay );
             });
             
             callback( null, stations );
