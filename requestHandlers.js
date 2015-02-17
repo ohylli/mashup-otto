@@ -49,6 +49,7 @@ function hkData( response ) {
         response.writeHead( 200, { "content-type": 'text/html' } );
         if ( err ) {
             console.log( err );
+            response.write( "<p>Unfortunately there was an error in fetching the data. Please try again later.</p>")
             response.end();
             return;
         }
