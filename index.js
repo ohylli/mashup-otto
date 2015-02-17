@@ -3,7 +3,7 @@ var server = require( "./server" );
 var router = require( "./router" );
 var requestHandlers = require( "./requestHandlers" );
 
-var dbUrl = "mongodb://localhost:27017/mashup";
+var dbUrl = (process.env.OPENSHIFT_MONGODB_DB_URL || "mongodb://localhost:27017/") +"mashup";
 var handle = [];
 handle["/"] = requestHandlers.start;
 handle["/api/query/hkdata"] = requestHandlers.hkData;
