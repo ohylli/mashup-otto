@@ -1,7 +1,9 @@
 ﻿var http = require( "http" );
 var url = require( "url" );
 
-var port = 9000;
+var port = process.env.OPENSHIFT_NODEJS_PORT || 9000;
+var serverIp = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+
 function start( route, handle )
 {
     function onRequest( request, response ) 
@@ -12,7 +14,7 @@ function start( route, handle )
     }
  
     var server = http.createServer( onRequest );
-    server.listen( port );
+    server.listen( port, serverIp );
     console.log( "The server has started. Listening on port " +port +"." );
 }
  
