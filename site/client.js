@@ -1,6 +1,10 @@
 $(document).ready( function() {
-    $("#data").load( "api/query/hkdata" );
+    function loadData( type ) {
+        $("#data").load( "api/query/hkdata?type=" +type );
+    }
+    
+    loadData( "both" );
     $(":radio[name=stations]").on( "change", function() {
-        alert( $(this).val() );
+        loadData( $(this).val() );
     });
 });
