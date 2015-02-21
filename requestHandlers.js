@@ -48,7 +48,7 @@ function query(response) {
 function hkData( response, request ) {
     var type = url.parse( request.url, true ).query['type'];
     console.log( "Query for station type: " +type );
-    data.getData(  function ( err, stations ) {
+    data.getData( type, function ( err, stations ) {
         response.writeHead( 200, { "content-type": 'text/html' } );
         if ( err ) {
             console.log( err );

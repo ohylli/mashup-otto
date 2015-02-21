@@ -93,15 +93,19 @@ function getAqhi( stations, callback ) {
            }
            
            var items = data['AQHI24HrReport']['item'];
-           for ( var i = 0; i < items.length; i++ ) {
-               var name = items[i]['StationName'][0];
-               if ( i == items.length -1 ||  name != items[i +1]['StationName'][0]  ) {
+           _.each( items, function( item, index ) {
+               var name = item['StationName'][0];
+               if ( index == items.length -1 ||  name != items[index +1]['StationName'][0]  ) {
                    // this is the last i.e. the newest measurement from a station
-                   if ( stations[name] ) {
-                       stations[name].aqhi = Number( items[i]['aqhi'][0] );
+                   var station = stations[name];
+                   if ( !station ) {
+                       station = { name: name };
+                       stations[name] = station;                       
                    }
+                   
+                   station.aqhi = Number( item['aqhi'][0] );
                }
-           }
+           });
            
            callback( null, stations );
        });
@@ -111,7 +115,6 @@ function getAqhi( stations, callback ) {
 function getDataFromWeb( callback ) {
     getWeather( function ( err, stations ) {
         if ( err ) {
-            console.log( "Error in aquiring data.");
             callback( err );
             return;
         }
@@ -122,34 +125,55 @@ function getDataFromWeb( callback ) {
                 return;
             }
             
-            stations = _.filter( stations, 'aqhi' );
-            dataCollection.insert( { result: stations  }, {w:1}, function ( err, result ) {
+            var stationList =  Object.keys( stations ).map( function ( key ) { return stations[ key ]; });
+            dataCollection.insert( stationList, {w:1}, function ( err, result ) {
                 if ( err ) {
                     console.log( "failed to insert query result to database." );
+                    callback( err );
                     return;
                 }
+                
                 console.log( "Query result inserted to database.");
                 setTimeout( clearDb, cacheClearDelay );
+                callback();
             });
-            
-            callback( null, stations );
         });
     });
 }
 
-function getData( callback ) {
+function getData( type, callback ) {
+    // this is used to get the data the user ants from the db
+    // but first we check if db has data
+    // if not we get it from the web.
+    function getFromDb( err ) {
+        if ( err ) {
+            callback( err );
+            return;
+        }
+        dataCollection.find().toArray(  function ( err, items ) {
+            if ( err ) {
+                console.log( "cannot read data from db." );
+                callback( err );
+                return;
+            }            
+            
+            callback( null, items );
+        });
+    }
+    
     dataCollection.findOne( function ( err, item ) {
         if ( err || !item) {
-            console.log( "not in database.");
-            getDataFromWeb( callback );
+            console.log( "nothing in database.");
+            getDataFromWeb( getFromDb  );
             return;
         }
         
         console.log( "data found from db." );
-        callback( null, item.result );
+        getFromDb();
     });
     
 }
+
 
 exports.getData = getData;
 exports.initDbConnection = initDbConnection;
