@@ -150,7 +150,15 @@ function getData( type, callback ) {
             callback( err );
             return;
         }
-        dataCollection.find().toArray(  function ( err, items ) {
+
+        var exists = { $exists: true };
+        var queries = {
+            both: { aqhi: exists, temperature: exists },
+            aqhi: { aqhi: exists },
+            weather: { temperature: exists },
+            all: {}
+        };
+        dataCollection.find( queries[type] ).toArray(  function ( err, items ) {
             if ( err ) {
                 console.log( "cannot read data from db." );
                 callback( err );
