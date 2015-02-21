@@ -3,6 +3,7 @@ var data = require('./data');
 
 var fs = require("fs");
 var nodepath = require( "path" );
+var url = require("url");
 var _ = require('lodash');
 
 function serveFile( path, response, status ) {
@@ -44,8 +45,10 @@ function query(response) {
     });
 }
 
-function hkData( response ) {
-    data.getData( function ( err, stations ) {
+function hkData( response, request ) {
+    var type = url.parse( request.url, true ).query['type'];
+    console.log( "Query for station type: " +type );
+    data.getData(  function ( err, stations ) {
         response.writeHead( 200, { "content-type": 'text/html' } );
         if ( err ) {
             console.log( err );
