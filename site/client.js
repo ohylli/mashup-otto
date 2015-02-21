@@ -1,6 +1,10 @@
 $(document).ready( function() {
     function loadData( type ) {
-        $("#data").load( "api/query/hkdata?type=" +type );
+        var form = $("#typeselect");
+        $(form).hide();
+        $("#data").load( "api/query/hkdata?type=" +type, function() {
+            $(form).show();
+        });
     }
     
     loadData( "both" );
