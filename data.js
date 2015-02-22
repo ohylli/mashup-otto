@@ -66,10 +66,13 @@ function getWeather( callback ) {
                 var tds = $('td', row );
                 var station = $(tds[0]).text();
                 var temperature = Number( $(tds[1]).text().split( ' ' )[0] );
-                stations[station] = {
-                    name: station,
-                    temperature: temperature
-                };
+                // there can also be rain information in another table which is formated differently
+                if ( !isNaN( temperature ) ) {
+                    stations[station] = {
+                        name: station,
+                        temperature: temperature
+                    };
+                }
             });
             
             callback( null, stations );

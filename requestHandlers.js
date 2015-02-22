@@ -1,6 +1,4 @@
-var helmet = require("./helmet");
 var data = require('./data');
-
 var fs = require("fs");
 var nodepath = require( "path" );
 var url = require("url");
@@ -57,5 +55,4 @@ function hkData( response, request ) {
 
 exports.serveFile = serveFile;
 exports.start = start;
-exports.query = query;
 exports.hkData = hkData;
