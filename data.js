@@ -4,12 +4,17 @@ var _ = require("lodash");
 var cheerio = require('cheerio');
 var mongodb = require( "mongodb" );
 
+// url for the aqhi information
 var aqhiUrl = 'http://www.aqhi.gov.hk/epd/ddata/html/out/24aqhi_Eng.xml';
+// url for the weather rss
 var weatherUrl = 'http://rss.weather.gov.hk/rss/CurrentWeather.xml';
 
+// the mondodb collection for the data
 var dataCollection = null;
+// how long (in ms) untill the db will be cleared after fetching the data
 var cacheClearDelay = 1000 *60 *10;
 
+// connect to the db and get the collection for the data
 function initDbConnection( dbUrl, callback ) {
     console.log( "Connecting to mongodb at " +dbUrl );
     var mongoClient = mongodb.MongoClient;
@@ -21,7 +26,7 @@ function initDbConnection( dbUrl, callback ) {
                     console.log( "could not get the hkdata  collection." );
                     console.log( err );
                     return;
-                } 
+                }
                 
                 dataCollection = collection;                
                 // if there are cached query results remove them
@@ -38,11 +43,13 @@ function initDbConnection( dbUrl, callback ) {
     });
 }
 
+// clear cached data from db
 function clearDb() {
     console.log( "Clearing the cached query result." );
     dataCollection.remove( function () {});
 }
 
+// get the temperature data
 function getWeather( callback ) {
     request( weatherUrl, function ( err, response, body ) {
         if ( err || response.statusCode != 200 ) {
@@ -51,6 +58,7 @@ function getWeather( callback ) {
             return;
         }
         
+        // get the html containing the data from the rss feed
         xml2js.parseString( body, function ( err, data ) {
             if ( err ) {
                 console.log( "Error in parsing the weather data.");
@@ -60,11 +68,14 @@ function getWeather( callback ) {
             
             var html = data['rss']['channel'][0]['item'][0]['description'][0];
             var $ = cheerio.load( html );
+            // the data is in a table: name, temperature
             var rows = $('tr');
             var stations = {};
             _.forEach( rows, function( row ) {
                 var tds = $('td', row );
+                // name
                 var station = $(tds[0]).text();
+                // temperature info like "19 degrees"
                 var temperature = Number( $(tds[1]).text().split( ' ' )[0] );
                 // there can also be rain information in another table which is formated differently
                 if ( !isNaN( temperature ) ) {
@@ -80,6 +91,7 @@ function getWeather( callback ) {
     });
 }
 
+// get the air quality information which is added to stations
 function getAqhi( stations, callback ) {
     request( aqhiUrl, function( err, response, body ) {
         if ( err ) {
@@ -95,12 +107,14 @@ function getAqhi( stations, callback ) {
                return;
            }
            
+           // measurements from the stations
            var items = data['AQHI24HrReport']['item'];
            _.each( items, function( item, index ) {
                var name = item['StationName'][0];
                if ( index == items.length -1 ||  name != items[index +1]['StationName'][0]  ) {
                    // this is the last i.e. the newest measurement from a station
                    var station = stations[name];
+                   // if there is no station object for this name create it otherwise add to the existing one
                    if ( !station ) {
                        station = { name: name };
                        stations[name] = station;                       
@@ -115,6 +129,7 @@ function getAqhi( stations, callback ) {
     });
 }
 
+// gets and combines the temperature and aqhi data from the web sources
 function getDataFromWeb( callback ) {
     getWeather( function ( err, stations ) {
         if ( err ) {
@@ -127,7 +142,8 @@ function getDataFromWeb( callback ) {
                 callback( err );
                 return;
             }
-            
+
+            // save each station as a separate document to mongodb
             var stationList =  Object.keys( stations ).map( function ( key ) { return stations[ key ]; });
             dataCollection.insert( stationList, {w:1}, function ( err, result ) {
                 if ( err ) {
@@ -137,6 +153,7 @@ function getDataFromWeb( callback ) {
                 }
                 
                 console.log( "Query result inserted to database.");
+                // clear the db after some time so we can get updated data from the web
                 setTimeout( clearDb, cacheClearDelay );
                 callback();
             });
@@ -144,6 +161,7 @@ function getDataFromWeb( callback ) {
     });
 }
 
+// get the aqhi and temperature data
 function getData( type, callback ) {
     // this is used to get the data the user ants from the db
     // but first we check if db has data
@@ -153,7 +171,8 @@ function getData( type, callback ) {
             callback( err );
             return;
         }
-
+        
+        // mongodb query objects for different user inputs i.e. station types
         var exists = { $exists: true };
         var queries = {
             both: { aqhi: exists, temperature: exists },
@@ -172,9 +191,11 @@ function getData( type, callback ) {
         });
     }
     
+    // do we have something in the db or to we have to get the data first from the web
     dataCollection.findOne( function ( err, item ) {
         if ( err || !item) {
             console.log( "nothing in database.");
+            // get data from web and then the users query can be performed from the db
             getDataFromWeb( getFromDb  );
             return;
         }

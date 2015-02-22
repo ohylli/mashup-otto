@@ -9,15 +9,15 @@
 <body>
     <h1>Welcome</h1>
     
-    <p>This mashup shows Hong Kong's temperature and air quality health index information from different measuring stations.</p>
+    <p>This mashup shows Hong Kong's temperature and air quality health index (aqhi) information from different measuring stations. Not all stations have both measurements: some only have aqhi or temperature.</p>
 
     <div id="typeselect">
-    <p>Show stations with:</p>
+    <p>Show stations that have:</p>
         <form id="typeform">
-            <input type="radio" name="stations" value="both" checked>Both<br>
+            <input type="radio" name="stations" value="both" checked>Both aqhi and temperature<br>
             <input type="radio" name="stations" value="aqhi">At least aqhi<br>
             <input type="radio" name="stations" value="weather">At least temperature<br>
-            <input type="radio" name="stations" value="all">All<br>
+            <input type="radio" name="stations" value="all">Either aqhi or temperature (all stations)<br>
         </form></div>
     
     <div id="data">Loading the data.</div>

@@ -1,6 +1,6 @@
 # mashup-otto
 
-A node.js based mashup application. I made this just to learn node.js so it is not really useful.
+A node.js based mashup application. I made this just to learn node.js so it is not probably really useful.
 
 ## Data sources
 
@@ -25,7 +25,7 @@ Note: the application will not start if it cannot connnect to mongodb.
 ## How it works
 
 - a HTTP server starts with node index.js
-- it tries to establish connection with a local mongodb data base called mashup. If it fails the application aborts.
+- it tries to establish connection with a  mongodb data base called mashup. If it fails the application aborts.
 - the mongodb url is in a variable called dbUrl in index.js
 - HTTP request to localhost:9000 returns the apps front page.
 - The front page uses a Ajax http request to get the actual data.
