@@ -14,12 +14,11 @@ The weather and air quality data contain measurements from different stations. S
 ## Installation
 
 This mashup works either locally or it can be deployed to OpenShift. It requires node.js, NPM and a MongoDB database. The local installation is a normal NPM based installation:
-```
-git clone https://github.com/ohylli/mashup-otto.git
-cd mashup-otto
-npm install
+
+git clone https://github.com/ohylli/mashup-otto.git  
+cd mashup-otto  
+npm instal  
 npm start
-```
 
 Note: the application will not start if it cannot connnect to mongodb.
 
