@@ -2,10 +2,8 @@ body
 {
   background-color:black;
   color:white;
-  //padding-left:50px;
-  //padding-right:50px;
-  padding-left:30%;
-  padding-right:30%;
+  padding-left:25%;
+  padding-right:25%;
   font-size:16pt;
   font-family:"Times New Roman", Serif;
 }
@@ -19,8 +17,6 @@ h1
 {
   text-align:center;
   border-bottom:3px solid white;
-  //margin-left:30%;
-  //margin-right:30%;
   padding-bottom:5px;
   font-size:30pt;
 }
