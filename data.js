@@ -68,8 +68,9 @@ function getWeather( callback ) {
             
             var html = data['rss']['channel'][0]['item'][0]['description'][0];
             var $ = cheerio.load( html );
-            // the data is in a table: name, temperature
-            var rows = $('tr');
+            // the data is in the first  table: name, temperature
+            var table = $("table")[0];
+            var rows = $('tr', table );
             var stations = {};
             _.forEach( rows, function( row ) {
                 var tds = $('td', row );
@@ -77,13 +78,10 @@ function getWeather( callback ) {
                 var station = $(tds[0]).text();
                 // temperature info like "19 degrees"
                 var temperature = Number( $(tds[1]).text().split( ' ' )[0] );
-                // there can also be rain information in another table which is formated differently
-                if ( !isNaN( temperature ) ) {
-                    stations[station] = {
-                        name: station,
-                        temperature: temperature
-                    };
-                }
+                stations[station] = {
+                    name: station,
+                    temperature: temperature
+                };
             });
             
             callback( null, stations );
