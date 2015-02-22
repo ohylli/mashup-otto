@@ -32,19 +32,6 @@ function start(response) {
     serveFile( "/index.html", response );
 }
 
-function query(response) {
-    console.log("make query");
-    helmet.getBooks(function(books) {
-        response.writeHead(200, {
-            "content-type": "application/json"
-        });
-        
-        console.log( books );
-        response.write( JSON.stringify( books ));
-        response.end();
-    });
-}
-
 function hkData( response, request ) {
     var type = url.parse( request.url, true ).query['type'];
     console.log( "Query for station type: " +type );
